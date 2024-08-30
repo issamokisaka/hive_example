@@ -1,0 +1,46 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+java {
+    sourceCompatibility = 1.21
+    targetCompatibility = 1.21
+}
+
+repositories {
+    mavenCentral()
+}
+
+application {
+    mainClass = 'br.org.teste.TesteHiveDesenv'
+}
+
+def deploy = true
+
+dependencies {
+    implementation('org.apache.hive:hive-jdbc:4.0.0-alpha-2') {
+        exclude group: 'org.apache.hadoop', module: 'hadoop-common'
+    }
+    implementation 'org.apache.hadoop:hadoop-common:3.1.1'
+
+    implementation 'org.slf4j:slf4j-api:2.0.16'
+//    implementation 'org.apache.logging.log4j:log4j-core:2.23.1'
+//    implementation 'org.apache.logging.log4j:log4j-api:2.23.1'
+//    implementation 'org.apache.logging.log4j:log4j-slf4j2-impl:2.23.1'
+}
+
+shadowJar {
+    zip64=true
+    archiveClassifier.set('')
+    manifest {
+        attributes 'Implementation-Title': 'Test access Hive, Impala and HDFS',
+                   'Built-Date': System.currentTimeMillis(),
+                   'Java-JDK': System.getProperty('java.version'),
+                   'Java-Vendor': System.getProperty('java.vm.vendor'),
+                   'UUID': UUID.randomUUID().toString().toUpperCase(),
+                   'Main-Class': "br.org.teste.TesteHiveDesenv"
+    }
+    eachFile { it.duplicatesStrategy = DuplicatesStrategy.EXCLUDE }
+}
